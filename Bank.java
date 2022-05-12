@@ -1,55 +1,102 @@
 package com.company;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class Bank {
+    private static final DecimalFormat df = new DecimalFormat("0.00");
+    private ArrayList<Branch> branches;
+    private String name;
 
-    private ArrayList<Branch> myBranchList;
-    private String bankName;
-
-    public Bank(String bankName) {
-        this.bankName = bankName;
-        this.myBranchList = new ArrayList<Branch>();
+    public Bank(String name) {//done
+        this.name = name;
+        this.branches = new ArrayList<Branch>();
     }
 
-//    public static Bank createBank(String bankName) {
-//        return new Bank(bankName);
-//    }
-
-//    public int findIndexOfBranch(Branch branch){
-//        return this.myBranchList.indexOf(branch);
-//    }
-
-    public void addBranch(String branchName) {
-        if (findBranch(branchName)>=0){
+    public boolean addBranch(String branchName) {//done
+        if (findBranch(branchName)!=null){
             System.out.println("Branch already exists.");
+            return  false;
         }
         else {
-            Branch newBranch = Branch.createBranch(branchName);
-            myBranchList.add(newBranch);
+            this.branches.add(Branch.createBranch(branchName));
             System.out.println("New branch added -- " + branchName);
+            return true;
         }
     }
 
+    public boolean addCustomer(String branchName, String customerName,
+                               double transaction) {
+        Branch branch = findBranch(branchName);
+        if (branch == null) {
+            return false;
+        } else {//I had this method checking for customer validity, but that
+            // already happens in newCustomer.
+            return branch.newCustomer(customerName, transaction);
+        }
+    }
+
+
     public void addBranch(Branch branchName) {
-        int x = findBranch(branchName.getBranchName());
-        if(x >=0){
+        if(findBranch(branchName.getName())!=null){
             System.out.println("Branch already exists.");
         }
         else{
-            myBranchList.add(branchName);
+            branches.add(branchName);
             System.out.println("New branch added -- " + branchName);
         }
     }
 
-    public int findBranch(String branchString) {
-        for (int i = 0; i < this.myBranchList.size(); i++) {
-            Branch branchName = this.myBranchList.get(i);
-            if (branchName.getBranchName().equals(branchString)) {
-                return i;
+    public Branch findBranch(String branchString) {
+        //this now returns a branch rather than an index number;
+        for (int i = 0; i < this.branches.size(); i++) {
+            Branch branchName = this.branches.get(i);
+            if (branchName.getName().equals(branchString)) {
+                return branchName;
             }
         }
-        return -1;
+        return null;
+    }
+
+    public boolean  addCustomerTransaction(String branchName,String customerName, double transaction) {
+        Branch branch = findBranch(branchName);
+        if (branch == null) {
+            return false;
+        } else {
+            return branch.addCustomerTransaction(transaction,
+                    customerName);
+        }
+    }
+
+    public boolean listCustomers(String branchName, boolean alsoPrintTransactions){
+        Branch branch = (findBranch(branchName));
+        if(branch==null){
+           return false;
+       }
+       else {
+           System.out.println("Customer details for branch " + branchName);
+           int scope = (branch.getCustomers().size()-1);
+           if (alsoPrintTransactions){//Names and Transactions
+                for (int i = 0; i< scope ; i++) {
+                    Customer customer = branch.getCustomers().get(i);
+System.out.println("Customer: " + customer.getName() + "["+ (i+1) + "]");
+                    System.out.println("Transactions:");
+                    int scope2 = (customer.getTransactions().size());
+                       for (int x = 0 ; x< scope2; x++){
+                           System.out.println(" " + " " + "      [" + (x + 1) + "]. "  + df.format(customer.getTransactions().get(x)));
+                          }
+                }
+
+           }
+           else{//Names only
+                System.out.println("List of customers:");
+                for (int i = 0; i< scope ; i++) {
+                    Customer customer = branch.getCustomers().get(i);
+                    System.out.println((i+1) + ". " + customer.getName());
+                }
+           }
+       }
+       return true;
     }
 
 
