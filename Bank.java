@@ -75,7 +75,7 @@ public class Bank {
        }
        else {
            System.out.println("Customer details for branch " + branchName);
-           int scope = (branch.getCustomers().size()-1);
+           int scope = (branch.getCustomers().size());
            if (alsoPrintTransactions){//Names and Transactions
                 for (int i = 0; i< scope ; i++) {
                     Customer customer = branch.getCustomers().get(i);
